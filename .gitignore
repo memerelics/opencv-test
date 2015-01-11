@@ -1,4 +1,5 @@
 .DS_Store
 .bundle
 
-test
+test/*
+!test/pin.png

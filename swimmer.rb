@@ -2,6 +2,7 @@ require 'bundler/setup'
 Bundler.require
 
 require 'opencv'
+include OpenCV
 
 # `convert pool201501.pdf out.png`
 
@@ -11,6 +12,7 @@ require 'opencv'
 #   puts OpenCV::CvMat.load(file)
 # end
 
+=begin
 cvmat = OpenCV::CvMat.load('./test/out-0.png')
 cvmat = cvmat.BGR2GRAY
 puts canny = cvmat.canny(50, 150)
@@ -26,3 +28,20 @@ while contour
 end
 
 cvmat.save_image 'out.png'
+=end
+
+pin = CvMat.load 'test/pin.png'
+src = CvMat.load 'test/out-4.png'
+
+res = src.match_template(pin, :sqdiff) # :sqdiff_normed
+# res_ng = CvMat.load('test/out-3.png').match_template(pin, :sqdiff)
+
+# binding.pry
+
+pt1 = res.min_max_loc[2] # minimum location
+pt2 = CvPoint.new(pt1.x + pin.width, pt1.y + pin.height)
+src.rectangle!(pt1, pt2, color: CvColor::Red, thickness: 2)
+
+window = GUI::Window.new('Show...')
+window.show(src)
+GUI::wait_key
